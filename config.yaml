@@ -5,7 +5,7 @@ app_name_en: ShopInspect
 camera_index: 0
 camera_backend: dshow
 
-model_path: yolo11n.pt
+model_path: models/def_best.pt
 confidence: 0.4
 iou: 0.45
 device: cpu

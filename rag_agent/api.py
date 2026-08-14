@@ -2,30 +2,54 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel
 
 from app.db import get_record
-from rag_agent.rag.retriever import dispose
 
 router = APIRouter(tags=["rag-agent"])
 
 
 @router.get("/dispose")
-def dispose_record(record_id: int):
-    """读 ShopInspect 检测记录的 top_label,返回该缺陷的处置 SOP + 来源。
+def dispose_record(record_id: int, use_agent: bool = True):
+    """读检测记录的 top_label,返回处置方案。
 
-    同进程 `import app.db`(不走网络),单端口 :8787/agent/dispose。
+    - use_agent=True(默认):Agent 编排(查SOP + 查历史 + 多步方案 + 高危标注)。
+    - use_agent=False:直接 RAG 检索(纯 SOP + 来源)。
     """
     rec = get_record(record_id)
     if rec is None:
         raise HTTPException(status_code=404, detail=f"record {record_id} not found")
     top_label = rec.get("top_label") or "unknown"
-    result = dispose(top_label)
+    if use_agent:
+        from rag_agent.agent.graph import dispose_with_agent
+
+        result = dispose_with_agent(top_label, record_id)
+    else:
+        from rag_agent.rag.retriever import dispose
+
+        result = dispose(top_label)
     return {
         "record_id": record_id,
         "top_label": top_label,
         "status": rec.get("status"),
         **result,
     }
+
+
+class ConfirmRequest(BaseModel):
+    record_id: int
+    action: str
+    approved: bool = True
+    operator: str = "unknown"
+
+
+@router.post("/dispose/confirm")
+def confirm_action(req: ConfirmRequest):
+    """高危处置动作人工确认(HITL):Agent 标注的高危项由人来批准。"""
+    from rag_agent.hitl import record_confirmation
+
+    entry = record_confirmation(req.record_id, req.action, req.approved, req.operator)
+    return {"confirmed": True, **entry}
 
 
 @router.get("/health")

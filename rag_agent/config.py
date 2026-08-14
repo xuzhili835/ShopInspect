@@ -21,7 +21,7 @@ class RagConfig:
     api_key: str = os.getenv("SILICONFLOW_API_KEY", "")
     base_url: str = os.getenv("SILICONFLOW_BASE_URL", "https://api.siliconflow.cn/v1")
     embedding_model: str = os.getenv("EMBEDDING_MODEL", "BAAI/bge-m3")
-    chat_model: str = os.getenv("CHAT_MODEL", "Qwen/Qwen3-30B-A3B")
+    chat_model: str = os.getenv("CHAT_MODEL", "Qwen/Qwen3-30B-A3B-Instruct-2507")
     # 检索相似度阈值:1/(1+L2距离),低于此的 chunk 丢弃
     min_score: float = float(os.getenv("RAG_MIN_SCORE", "0.3"))
     # 路径
