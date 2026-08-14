@@ -818,10 +818,13 @@ function bindUi() {
       const showDetect = page === "detect" || page === "history";
       if (el("pageDetect")) el("pageDetect").classList.toggle("hidden", !showDetect);
       if (el("pageAbout")) el("pageAbout").classList.toggle("hidden", page !== "about");
+      if (el("pageAgent")) el("pageAgent").classList.toggle("hidden", page !== "agent");
       if (el("pageTitle")) {
         el("pageTitle").textContent =
-          page === "about" ? "说明" : page === "history" ? "历史记录" : "检测工作台";
+          page === "about" ? "说明" : page === "history" ? "历史记录" :
+          page === "agent" ? "缺陷处置" : "检测工作台";
       }
+      if (page === "agent") loadAgentRecords();
       if (page === "history" && el("historyCard")) {
         el("historyCard").scrollIntoView({ behavior: "smooth", block: "start" });
       }
@@ -948,6 +951,91 @@ function bindUi() {
       if (currentDetailId == null) { toast("无当前记录", "err"); return; }
       loadDispose(currentDetailId);
     };
+  }
+
+  // === 缺陷处置页(看板内嵌,复用 mdRender/escapeHtml)===
+  var agentLoaded = false;
+  async function loadAgentRecords(force) {
+    var box = el("agentRecList");
+    if (!box) return;
+    if (agentLoaded && !force) return;
+    box.innerHTML = '<div class="empty">加载中…</div>';
+    try {
+      var rows = await fetch("/records?limit=30").then(function (r) { return r.json(); });
+      rows = (rows || []).slice().sort(function (a, b) {
+        var wa = a.status === "alert" ? 1 : 0, wb = b.status === "alert" ? 1 : 0;
+        return wb - wa || b.id - a.id;
+      });
+      if (!rows.length) { box.innerHTML = '<div class="empty">暂无记录,先去检测工作台上传图片</div>'; return; }
+      box.innerHTML = rows.map(function (r) {
+        var st = r.status === "alert"
+          ? '<span class="status-pill alert">告警</span>'
+          : '<span class="status-pill clear">正常</span>';
+        return '<div class="agent-rec" data-rid="' + r.id + '">' +
+          '<span class="rec-id">#' + r.id + "</span>" +
+          '<span class="rec-label pill">' + escapeHtml(r.top_label || "-") + "</span>" + st +
+          '<span class="rec-n">' + (r.num_detections || 0) + " 框</span>" +
+          '<span class="rec-time">' + escapeHtml(String(r.created_at || "").slice(5, 16)) + "</span></div>";
+      }).join("");
+      box.querySelectorAll("[data-rid]").forEach(function (it) {
+        it.onclick = function () {
+          box.querySelectorAll(".agent-rec").forEach(function (x) { x.classList.remove("active"); });
+          it.classList.add("active");
+          loadAgentDispose(it.dataset.rid);
+        };
+      });
+      agentLoaded = true;
+    } catch (e) {
+      box.innerHTML = '<div class="empty">加载失败: ' + escapeHtml(String(e)) + "</div>";
+    }
+  }
+
+  async function loadAgentDispose(rid) {
+    var status = el("agentDisposeStatus");
+    var riskBox = el("agentDisposeRisk");
+    var body = el("agentDisposeBody");
+    var empty = el("agentDisposeEmpty");
+    if (!body) return;
+    empty.classList.add("hidden");
+    body.classList.remove("hidden");
+    status.textContent = "· 编排中(约 10-20 秒)…";
+    riskBox.innerHTML = "";
+    body.innerHTML = '<div class="empty">⏳ Agent 正在查询 SOP 与历史记录…</div>';
+    try {
+      var j = await fetch("/agent/dispose?record_id=" + rid + "&use_agent=true").then(function (r) { return r.json(); });
+      if (j.detail) { status.textContent = "· 失败"; body.innerHTML = '<div class="empty">' + escapeHtml(String(j.detail)) + "</div>"; return; }
+      status.textContent = "· #" + j.record_id + " " + escapeHtml(j.top_label || "-") + " · " + (j.status === "alert" ? "告警" : "正常");
+      if (j.needs_confirmation && Array.isArray(j.high_risk_actions) && j.high_risk_actions.length) {
+        riskBox.innerHTML = j.high_risk_actions.map(function (a) {
+          var ae = escapeHtml(a);
+          return '<div class="risk-item"><span class="risk-name">⚠ ' + ae + "</span>" +
+            '<button type="button" class="btn btn-ok btn-xs" data-cf="' + ae + '" data-ok="1">批准</button>' +
+            '<button type="button" class="btn btn-danger btn-xs" data-cf="' + ae + '" data-ok="0">拒绝</button>' +
+            '<span class="risk-ret" data-cfret="' + ae + '"></span></div>';
+        }).join("");
+        riskBox.querySelectorAll("[data-cf]").forEach(function (btn) {
+          btn.onclick = async function () {
+            var ret = riskBox.querySelector('[data-cfret="' + btn.dataset.cf + '"]');
+            ret.textContent = "提交中…";
+            try {
+              await fetch("/agent/dispose/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ record_id: Number(rid), action: btn.dataset.cf, approved: btn.dataset.ok === "1", operator: "看板" })
+              });
+              ret.innerHTML = btn.dataset.ok === "1" ? '<span class="risk-ok">✓ 已批准</span>' : '<span class="risk-no">✗ 已拒绝</span>';
+              btn.disabled = true;
+            } catch (e) { ret.textContent = "失败"; }
+          };
+        });
+      }
+      body.innerHTML = j.found === false
+        ? '<div class="empty">' + escapeHtml(j.dispose || "未找到处置方案") + "</div>"
+        : mdRender(j.dispose || "");
+    } catch (e) {
+      status.textContent = "· 请求失败";
+      body.innerHTML = '<div class="empty">' + escapeHtml(String(e)) + "</div>";
+    }
   }
 
   if (el("modalClose")) el("modalClose").onclick = closeDetailModal;
