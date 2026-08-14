@@ -36,7 +36,8 @@
 
 ## 何承恩负责的模块:`rag_agent/`(全 Python,新增)
 **接入原则(单端口)**:
-- rag_agent 代码全写在 `rag_agent/` 目录。**唯一碰 `app/` 的地方:`app/main.py` 加一行** `app.include_router(rag_router, prefix="/agent")` 挂载(单进程单端口)。其余 `scripts/`/`static/`/`config.yaml` 不动。
+- rag_agent 核心代码集中在 `rag_agent/` 目录。**本仓库是何承恩的 fork,可改 `app/`/`scripts/`/`static/`/`config.yaml`**——不再限制"只加 main.py 一行"。
+- **小优化/增强可直接做**:加 UI 入口/按钮、样式微调、补注释、小 bugfix、config 加字段、加路由/脚本。**大改先确认**:重写检测/历史核心逻辑、改 records 表结构、动数据迁移、改主架构、删既有功能。模糊时默认当小优化做,commit/汇报里点明。
 - 一个进程、一个端口 `:8787`、一条命令起。读记录走同进程 `import app.db`,**不走 REST 网络**。
 - langchain/chroma 装进 ShopInspect **共用 `.venv`**。
 - 分支:`feature/rag-agent`。不自动 push(何承恩说推才推)。
@@ -102,12 +103,13 @@ scope 隔离 → LangChain `metadata` filter(缺陷类);防幻觉 → retriever 
 2. `git checkout -b feature/rag-agent`。
 3. 建 `rag_agent/` 骨架(目录 + `__init__.py` + README + .gitignore + requirements)。
 4. 做 `rag_agent/rag/` MVP(chunker + embedder via SiliconFlow + Chroma + retriever)+ 灌 3-5 条 SOP 种子。
-5. `rag_agent/api.py` + `app/main.py` 加一行挂载,端点 `/agent/dispose?record_id=xxx`,单端口 :8787/agent。
+5. `rag_agent/api.py` + `app/main.py` 挂载路由(`include_router`,prefix=/agent),端点 `/agent/dispose?record_id=xxx`,单端口 :8787/agent。
 6. 联调验证:上传图出 alert → 调用 → 出 SOP + 来源。
 
 ## 不要做(禁忌)
-- 不改 `scripts/`/`static/`/`config.yaml`;`app/` 只允许 `main.py` 加一行 `include_router`(接入点)。
-- 不碰前端 `static/`(阶段 3 要动须经周靖同意)。
+- **大改要先确认何承恩**:重写检测/历史/摄像头核心逻辑、改 records 表结构/字段、动数据迁移、改主架构(检测→推理→落库主链路)、删既有功能。
+- 小优化/增强(加 UI 入口/按钮、样式、注释、bugfix、config 加字段、加路由/脚本)**可直接做**,commit/汇报里写清即可。
+- 不自动 push、不把 key 进 git、commit 不加 Co-Authored-By。
 - 不自动 push、不把 key 进 git、commit 不加 Co-Authored-By。
 - 不重做周靖已完成项(先读 CURRENT_PROGRESS.md)。
 

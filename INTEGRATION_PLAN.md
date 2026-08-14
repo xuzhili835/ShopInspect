@@ -125,7 +125,11 @@ rag_agent/
 
 ## 八、协作约束
 
-- 代码只在 `rag_agent/` 写;唯一例外是 `app/main.py` **加一行** `include_router` 接入 rag_agent 路由。`scripts/`/`static/`/`config.yaml` 不动(阶段 3 动前端须经周靖同意)。
+- **本仓库是何承恩的 fork,非"只读"——可改 `app/`/`scripts/`/`static/`/`config.yaml`**。规则按改动幅度分:
+  - **小优化/增强(直接做)**:加 UI 入口、内联按钮、样式微调、补注释、小 bugfix、版本号 bump、加路由/端点、config 加字段、scripts 加工具脚本——默认就做,commit 里写清。
+  - **大改(改前确认何承恩)**:重写检测/历史/摄像头核心逻辑、改 records 表结构或字段、动数据迁移、改核心架构(如检测→推理→落库主链路)、删既有功能。
+  - 界线模糊时,默认归"小优化"先做,但在 commit message 和汇报里点明,便于事后回看/回退。
+- rag_agent 的核心代码仍集中在 `rag_agent/`(职责清晰、PR 好看);`app/` 的接入点不再限于"main.py 一行"。
 - 分支 `feature/rag-agent`;**不自动 push**(你说推才推)。
 - commit 不加 Co-Authored-By;**key 不进 git / 命令行 / commit message**。
 - 权重 / venv / 日志 / `runs/` 不进 git(`.gitignore` 已忽略 `*.pt`/`data/*.db`/`.venv`/`*.log`,再加 `runs/`)。
