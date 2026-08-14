@@ -247,6 +247,8 @@ tr.selected td{background:#fff7ed}
           <button type="button" class="btn btn-ghost btn-xs" data-filter="upload">upload</button>
           <button type="button" class="btn btn-ghost btn-xs" data-filter="camera">camera</button>
           <button type="button" class="btn btn-ghost btn-xs" data-filter="file">file</button>
+          <span style="width:1px;height:18px;background:var(--line2);margin:0 2px"></span>
+          <button type="button" class="btn btn-ghost btn-xs" id="btnAlertOnly" title="只显示检出缺陷(alert)的记录">⚑ 只看告警</button>
         </div>
         <div class="toolbar" style="gap:6px;align-items:center">
           <input id="filterWorkOrder" type="text" placeholder="筛工单号" style="width:120px;margin:0;padding:6px 8px" />
@@ -282,6 +284,10 @@ tr.selected td{background:#fff7ed}
             <tbody id="tbody"></tbody>
           </table>
           <div id="emptyRecords" class="empty hidden">暂无历史记录</div>
+        </div>
+        <div class="toolbar" style="justify-content:space-between;margin-top:8px">
+          <span id="histCount" style="font-size:12px;color:var(--muted)"></span>
+          <button type="button" class="btn btn-secondary btn-xs hidden" id="btnLoadMore">加载更多</button>
         </div>
         <div id="detailBox" class="hidden"></div>
         <button type="button" class="btn btn-danger btn-xs hidden" id="btnDeleteOne">删除这条</button>
@@ -337,6 +343,6 @@ tr.selected td{background:#fff7ed}
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="/static/app.js?v=015"></script>
+<script src="/static/app.js?v=016"></script>
 </body>
 </html>

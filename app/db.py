@@ -173,6 +173,7 @@ def list_records(
     label: str | None = None,
     work_order: str | None = None,
     batch_id: str | None = None,
+    status: str | None = None,
     settings: Settings | None = None,
 ) -> list[dict[str, Any]]:
     init_db(settings)
@@ -200,6 +201,9 @@ def list_records(
         if batch_id:
             sql += " AND batch_id = ?"
             params.append(batch_id)
+        if status:
+            sql += " AND status = ?"
+            params.append(status)
         sql += " ORDER BY id DESC LIMIT ? OFFSET ?"
         params.extend([limit, offset])
         rows = conn.execute(sql, params).fetchall()

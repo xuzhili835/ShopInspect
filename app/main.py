@@ -311,6 +311,7 @@ def records(
     label: Optional[str] = Query(None),
     work_order: Optional[str] = Query(None),
     batch_id: Optional[str] = Query(None),
+    status: Optional[str] = Query(None, description="alert|clear"),
 ) -> list[RecordSummary]:
     rows = list_records(
         limit=limit,
@@ -319,6 +320,7 @@ def records(
         label=label,
         work_order=work_order,
         batch_id=batch_id,
+        status=status,
     )
     return [RecordSummary(**r) for r in rows]
 
@@ -331,6 +333,7 @@ def records_export_csv(
     label: Optional[str] = Query(None),
     work_order: Optional[str] = Query(None),
     batch_id: Optional[str] = Query(None),
+    status: Optional[str] = Query(None, description="alert|clear"),
 ):
     rows = list_records(
         limit=limit,
@@ -339,6 +342,7 @@ def records_export_csv(
         label=label,
         work_order=work_order,
         batch_id=batch_id,
+        status=status,
     )
     buf = io.StringIO()
     writer = csv.writer(buf)

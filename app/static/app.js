@@ -45,12 +45,16 @@ let filterSource = "";
 let filterLabel = "";
 let filterWorkOrder = "";
 let filterBatchId = "";
+let filterStatus = "";
 let knownLabels = {};
 let currentDetailId = null;
 let selected = new Set();
 let lastDetections = [];
 let lastFrameSize = null;
 let liveStats = { fps: 0, lastMs: 0, frames: 0, windowAt: 0 };
+let histLimit = 50;
+let histLoaded = 0;
+let histMore = false;
 
 function toast(msg, type) {
   type = type || "ok";
@@ -170,7 +174,7 @@ function setMode(next) {
   if (mode === "camera") el("stageWrap").classList.add("cam-on");
   else {
     el("stageWrap").classList.remove("cam-on");
-    stopLive();
+    stopCamera(); // 切回上传模式直接关摄像头流,不再亮灯占用设备
   }
   syncPlaceholders();
 }
@@ -517,85 +521,99 @@ function buildRecordQuery(extra) {
   if (filterLabel) q.set("label", filterLabel);
   if (filterWorkOrder) q.set("work_order", filterWorkOrder);
   if (filterBatchId) q.set("batch_id", filterBatchId);
+  if (filterStatus) q.set("status", filterStatus);
   return q;
 }
 
-async function refreshRecords() {
-  const q = buildRecordQuery({ limit: "50" });
+// 单行构建(字段统一转义,用户输入不裸拼 innerHTML)
+function buildRecordRow(row) {
+  const tr = document.createElement("tr");
+  tr.dataset.id = String(row.id);
+  if (row.id === currentDetailId) tr.classList.add("active");
+  if (selected.has(row.id)) tr.classList.add("selected");
+
+  const checked = selected.has(row.id) ? "checked" : "";
+  const thumb = row.image_path
+    ? '<img class="thumb" src="/files/' + encodeURIComponent(String(row.image_path).replace(/^\/+/, "")) + '" alt="" loading="lazy" />'
+    : '<div class="thumb ph"></div>';
+  const timeShort = escapeHtml(String(row.created_at || "").replace("T", " ").slice(5, 19));
+  const top = escapeHtml(row.top_label || "-");
+  const ms = row.elapsed_ms != null ? (Math.round(row.elapsed_ms) + "ms") : "-";
+  const st = row.status
+    ? ('<div class="status-pill ' + (row.status === "alert" ? "alert" : "clear") + '">' + escapeHtml(row.status) + "</div>")
+    : "";
+
+  tr.innerHTML =
+    '<td><input type="checkbox" ' + checked + ' data-sel="' + row.id + '" /></td>' +
+    "<td>" + thumb + "</td>" +
+    "<td><div>" + row.id + "</div>" + st + "</td>" +
+    '<td title="' + escapeHtml(row.created_at || "") + '">' + timeShort + "</td>" +
+    '<td><span class="pill">' + escapeHtml(row.source) + "</span></td>" +
+    '<td title="' + escapeHtml(row.work_order || "-") + '">' + escapeHtml(row.work_order || "-") + "</td>" +
+    '<td title="' + escapeHtml(row.batch_id || "-") + '">' + escapeHtml(row.batch_id || "-") + "</td>" +
+    "<td>" + row.num_detections + "</td>" +
+    "<td>" + top + "</td>" +
+    "<td>" + ms + "</td>" +
+    '<td class="ops">' +
+    '<button type="button" class="btn btn-secondary btn-xs" data-view="' + row.id + '">查看</button>' +
+    '<button type="button" class="btn btn-danger btn-xs" data-del="' + row.id + '">删除</button>' +
+    "</td>";
+
+  const sel = tr.querySelector('[data-sel="' + row.id + '"]');
+  if (sel) {
+    sel.onclick = function (e) {
+      e.stopPropagation();
+      if (e.target.checked) selected.add(row.id);
+      else selected.delete(row.id);
+      tr.classList.toggle("selected", e.target.checked);
+      updateSelCount();
+    };
+  }
+  const viewBtn = tr.querySelector('[data-view="' + row.id + '"]');
+  if (viewBtn) {
+    viewBtn.onclick = function (e) {
+      e.stopPropagation();
+      showDetail(row.id);
+    };
+  }
+  const delBtn = tr.querySelector('[data-del="' + row.id + '"]');
+  if (delBtn) {
+    delBtn.onclick = async function (e) {
+      e.stopPropagation();
+      if (!confirm("删除记录 #" + row.id + "？")) return;
+      try {
+        await deleteOne(row.id);
+        await refreshRecords();
+        await refreshStats();
+        updateSelCount();
+      } catch (err) {
+        toast(err.message, "err");
+      }
+    };
+  }
+  tr.onclick = function () { showDetail(row.id); };
+  return tr;
+}
+
+// append=false 重置到第一页;append=true 追加下一页
+async function refreshRecords(append) {
+  append = append === true;
+  if (!append) histLoaded = 0;
+  const q = buildRecordQuery({ limit: String(histLimit), offset: String(histLoaded) });
   const rows = await (await fetch("/records?" + q.toString())).json();
   const tb = el("tbody");
   if (!tb) return;
-  tb.innerHTML = "";
-  if (el("emptyRecords")) el("emptyRecords").classList.toggle("hidden", rows.length > 0);
-
-  rows.forEach(function (row) {
-    const tr = document.createElement("tr");
-    tr.dataset.id = String(row.id);
-    if (row.id === currentDetailId) tr.classList.add("active");
-    if (selected.has(row.id)) tr.classList.add("selected");
-
-    const checked = selected.has(row.id) ? "checked" : "";
-    const thumb = row.image_path
-      ? '<img class="thumb" src="/files/' + String(row.image_path).replace(/^\/+/, "") + '" alt="" loading="lazy" />'
-      : '<div class="thumb ph"></div>';
-    const timeShort = String(row.created_at || "").replace("T", " ").slice(5, 19);
-    const top = row.top_label || "-";
-    const ms = row.elapsed_ms != null ? (Math.round(row.elapsed_ms) + "ms") : "-";
-    const st = row.status
-      ? ('<div class="status-pill ' + (row.status === "alert" ? "alert" : "clear") + '">' + row.status + "</div>")
+  if (!append) tb.innerHTML = "";
+  rows.forEach(function (row) { tb.appendChild(buildRecordRow(row)); });
+  histLoaded += rows.length;
+  histMore = rows.length >= histLimit;
+  if (el("emptyRecords")) el("emptyRecords").classList.toggle("hidden", histLoaded > 0);
+  if (el("btnLoadMore")) el("btnLoadMore").classList.toggle("hidden", !histMore);
+  if (el("histCount")) {
+    el("histCount").textContent = histLoaded
+      ? ("已加载 " + histLoaded + " 条" + (histMore ? " · 点击加载更多" : ""))
       : "";
-
-    tr.innerHTML =
-      '<td><input type="checkbox" ' + checked + ' data-sel="' + row.id + '" /></td>' +
-      "<td>" + thumb + "</td>" +
-      "<td><div>" + row.id + "</div>" + st + "</td>" +
-      '<td title="' + (row.created_at || "") + '">' + timeShort + "</td>" +
-      '<td><span class="pill">' + row.source + "</span></td>" +
-      '<td title="' + (row.work_order || "-") + '">' + (row.work_order || "-") + "</td>" +
-      '<td title="' + (row.batch_id || "-") + '">' + (row.batch_id || "-") + "</td>" +
-      "<td>" + row.num_detections + "</td>" +
-      "<td>" + top + "</td>" +
-      "<td>" + ms + "</td>" +
-      '<td class="ops">' +
-      '<button type="button" class="btn btn-secondary btn-xs" data-view="' + row.id + '">查看</button>' +
-      '<button type="button" class="btn btn-danger btn-xs" data-del="' + row.id + '">删除</button>' +
-      "</td>";
-
-    const sel = tr.querySelector('[data-sel="' + row.id + '"]');
-    if (sel) {
-      sel.onclick = function (e) {
-        e.stopPropagation();
-        if (e.target.checked) selected.add(row.id);
-        else selected.delete(row.id);
-        tr.classList.toggle("selected", e.target.checked);
-        updateSelCount();
-      };
-    }
-    const viewBtn = tr.querySelector('[data-view="' + row.id + '"]');
-    if (viewBtn) {
-      viewBtn.onclick = function (e) {
-        e.stopPropagation();
-        showDetail(row.id);
-      };
-    }
-    const delBtn = tr.querySelector('[data-del="' + row.id + '"]');
-    if (delBtn) {
-      delBtn.onclick = async function (e) {
-        e.stopPropagation();
-        if (!confirm("删除记录 #" + row.id + "？")) return;
-        try {
-          await deleteOne(row.id);
-          await refreshRecords();
-          await refreshStats();
-          updateSelCount();
-        } catch (err) {
-          toast(err.message, "err");
-        }
-      };
-    }
-    tr.onclick = function () { showDetail(row.id); };
-    tb.appendChild(tr);
-  });
+  }
   updateSelCount();
 }
 
@@ -745,6 +763,19 @@ function bindUi() {
     refreshRecords();
   }
   if (el("btnApplyFilter")) el("btnApplyFilter").onclick = applyMetaFilters;
+  if (el("btnAlertOnly")) {
+    el("btnAlertOnly").onclick = function () {
+      filterStatus = filterStatus === "alert" ? "" : "alert";
+      el("btnAlertOnly").classList.toggle("active", filterStatus === "alert");
+      refreshRecords();
+    };
+  }
+  if (el("btnLoadMore")) {
+    el("btnLoadMore").onclick = async function () {
+      el("btnLoadMore").disabled = true;
+      try { await refreshRecords(true); } finally { el("btnLoadMore").disabled = false; }
+    };
+  }
   if (el("btnClearFilter")) {
     el("btnClearFilter").onclick = function () {
       if (el("filterWorkOrder")) el("filterWorkOrder").value = "";
@@ -752,6 +783,13 @@ function bindUi() {
       filterWorkOrder = "";
       filterBatchId = "";
       filterLabel = "";
+      filterSource = "";
+      filterStatus = "";
+      // 复位来源按钮与告警开关的高亮态
+      document.querySelectorAll("[data-filter]").forEach(function (b) {
+        b.classList.toggle("active", !b.getAttribute("data-filter"));
+      });
+      if (el("btnAlertOnly")) el("btnAlertOnly").classList.remove("active");
       renderLabelFilters();
       refreshRecords();
     };
