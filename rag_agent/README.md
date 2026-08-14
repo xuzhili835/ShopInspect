@@ -32,3 +32,16 @@ rag_agent/
 
 类名(英文 snake_case,与缺陷模型一致):
 `crazing / inclusion / patches / pitted_surface / rolled-in_scale / scratches`
+
+## 实际成果(已验证)
+
+- **缺陷模型**:NEU-DET 6 类,**mAP50=0.817**,CPU 推理 27.6ms/张(`models/def_best.pt`)
+- **RAG**:24 chunks 建库(Chroma),bge-m3 via SiliconFlow,score_threshold + 来源引用 + 无命中拒答
+- **Agent**:LangGraph ReAct(`create_react_agent`),工具 query_sop + query_history,12-18s 出多步方案
+- **HITL**:识别换件/停机/报废/补焊,`POST /agent/dispose/confirm` 批准/拒绝
+- **端到端闭环**(已验证):上传缺陷图 → 检出 → Agent 方案(主动查历史判断频发) → 高危确认 → 工作台可视化
+
+端点:
+- `GET /agent/dispose?record_id=X&use_agent=true` — Agent 编排处置(use_agent=false 走纯 RAG)
+- `POST /agent/dispose/confirm` — 高危动作人工确认
+- `GET /agent/` — 处置工作台(独立前端页,零侵入 static/)
