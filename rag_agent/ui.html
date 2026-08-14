@@ -5,91 +5,210 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>缺陷处置工作台 · ShopInspect</title>
 <style>
-  * { box-sizing: border-box; }
-  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f7fa; color: #1f2937; }
-  .wrap { max-width: 920px; margin: 0 auto; padding: 24px; }
-  h1 { font-size: 20px; margin: 0 0 4px; }
-  .sub { color: #6b7280; font-size: 13px; margin-bottom: 18px; }
-  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
-  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-  input[type=number] { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; width: 110px; font-size: 14px; }
-  button { padding: 8px 16px; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; font-size: 14px; }
-  button:hover { background: #1d4ed8; }
-  button.sec { background: #e5e7eb; color: #374151; }
-  button.sec:hover { background: #d1d5db; }
-  .tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 12px; margin-right: 6px; }
-  .tag.alert { background: #fee2e2; color: #b91c1c; }
-  .tag.ok { background: #dcfce7; color: #166534; }
-  .tag.warn { background: #fef3c7; color: #92400e; }
-  pre { white-space: pre-wrap; word-wrap: break-word; font-family: "Consolas", "Menlo", monospace; font-size: 13px; line-height: 1.65; margin: 0; }
-  .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; }
-  .risk-item { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; margin-bottom: 6px; }
-  .muted { color: #9ca3af; font-size: 12px; }
-  .loading { color: #2563eb; }
-  a { color: #2563eb; }
+  :root{
+    --bg:#f3f5f9; --panel:#fff; --line:#e6ebf2; --line2:#d7dee8;
+    --text:#1f2937; --muted:#6b7280; --title:#111827;
+    --primary:#0d9488; --primary-soft:#ecfdf5;
+    --danger:#ef4444; --ok:#16a34a; --warn:#d97706;
+  }
+  *{box-sizing:border-box}
+  body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif;margin:0;background:var(--bg);color:var(--text)}
+  .wrap{max-width:960px;margin:0 auto;padding:20px 20px 40px}
+  .top{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+  .logo-mark{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}
+  h1{font-size:19px;margin:0;color:var(--title);font-weight:750}
+  .sub{color:var(--muted);font-size:12px;margin:0 0 16px 40px}
+  .sub a{color:var(--primary);text-decoration:none;font-weight:600}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(15,23,42,.06);padding:16px;margin-bottom:14px}
+  .card h2{margin:0 0 10px;font-size:14px;color:var(--title)}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  input[type=number]{padding:9px 11px;border:1px solid var(--line2);border-radius:10px;width:130px;font-size:13px;outline:none}
+  input[type=number]:focus{border-color:#5eead4;box-shadow:0 0 0 3px rgba(20,184,166,.12)}
+  button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;cursor:pointer;font-size:13px}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  .btn-primary{background:linear-gradient(180deg,#14b8a6,#0d9488);color:#fff}
+  .btn-sec{background:#eef2f7;color:#334155}
+  .muted{color:var(--muted);font-size:12px}
+  .tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:650}
+  .tag.alert{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+  .tag.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}
+  .tag.warn{background:#fef3c7;color:#92400e;border:1px solid #fde68a}
+  .label{font-size:12px;color:var(--muted);margin:0 0 8px;font-weight:650}
+  /* 最近记录点选 */
+  .rec-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+  .rec-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:#fcfdff;cursor:pointer;font-size:12px}
+  .rec-item:hover{border-color:#5eead4;background:var(--primary-soft)}
+  .rec-item .rid{font-weight:750;color:var(--title)}
+  .rec-item .rlab{color:#0f766e;font-weight:600}
+  .rec-item .rt{color:#9ca3af;font-size:11px;margin-left:auto}
+  .status-pill{display:inline-block;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700}
+  .status-pill.alert{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+  .status-pill.clear{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}
+  /* 高危动作 */
+  .risk-item{display:flex;align-items:center;gap:8px;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;margin-bottom:6px;font-size:12px}
+  .risk-item .btn-sec{padding:5px 9px;font-size:12px;border-radius:8px}
+  /* markdown 渲染(与主看板同款式) */
+  .md-body{font-size:13px;line-height:1.75;color:var(--text)}
+  .md-body .md-h{font-weight:750;color:var(--title);margin:10px 0 2px}
+  .md-body .md-p{margin:3px 0}
+  .md-body .md-li{margin:2px 0;color:#374151}
+  .md-body .md-step{margin:5px 0;display:flex;gap:8px;align-items:flex-start}
+  .md-body .md-no{flex:none;width:20px;height:20px;border-radius:6px;background:var(--primary);color:#fff;font-size:12px;font-weight:750;display:grid;place-items:center;margin-top:2px}
+  .md-body .md-flag{background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:6px;padding:0 6px;font-weight:650;font-size:12px}
+  .md-body .md-gap{height:8px}
+  .md-body b{color:#0f172a}
+  .loading{color:var(--primary);font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🛠 缺陷处置工作台</h1>
-  <div class="sub">ShopInspect · Agent 编排(查 SOP + 查历史)+ 高危动作人工确认 · <a href="/" target="_blank">返回主看板</a></div>
+  <div class="top">
+    <div class="logo-mark">SI</div>
+    <h1>🛠 缺陷处置工作台</h1>
+  </div>
+  <p class="sub">ShopInspect · Agent 编排(查 SOP + 查历史)+ 高危动作人工确认 · <a href="/">← 返回主看板</a></p>
 
   <div class="card">
-    <div class="row">
-      <span>检测记录 ID:</span>
-      <input id="rid" type="number" value="9">
-      <label><input type="checkbox" id="ag" checked> 用 Agent(否则纯 RAG)</label>
-      <button onclick="run()">查询处置方案</button>
+    <h2>选择检测记录</h2>
+    <p class="muted" style="margin:0 0 10px">最近的检测记录(alert 优先),点击任意一条直接查询处置方案;也可手动输入 ID。</p>
+    <div id="recList" class="rec-list"><span class="muted">加载中…</span></div>
+    <div class="row" style="margin-top:12px">
+      <input id="rid" type="number" min="1" placeholder="记录 ID" />
+      <label class="muted" style="display:flex;align-items:center;gap:6px"><input type="checkbox" id="ag" checked> 用 Agent(否则纯 RAG)</label>
+      <button class="btn-primary" id="btnRun">查询处置方案</button>
     </div>
-    <div class="muted" style="margin-top:8px">提示:先在主看板上传缺陷图检测,拿到记录 ID 后填这里查询处置。</div>
   </div>
 
   <div id="out"></div>
 </div>
 
 <script>
-async function run(){
-  const rid = document.getElementById('rid').value;
-  const ag = document.getElementById('ag').checked;
-  const out = document.getElementById('out');
-  out.innerHTML = '<div class="card loading">⏳ Agent 编排中(查 SOP + 查历史,约 10-20 秒)...</div>';
+function esc(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+// 轻量 Markdown 渲染(与主看板 app.js 同一套规则)
+function mdRender(md){
+  var lines = String(md||"").split(/\r?\n/);
+  var html = [];
+  lines.forEach(function(raw){
+    var line = raw.replace(/\s+$/,"");
+    if(!line.trim()){ html.push('<div class="md-gap"></div>'); return; }
+    var indent = Math.min(2, Math.floor((raw.match(/^\s*/)||[""])[0].length/3));
+    var pad = indent*18;
+    var t = esc(line.trim());
+    t = t.replace(/\*\*([^*]+)\*\*/g,"<b>$1</b>");
+    t = t.replace(/\*([^*\s][^*]*)\*/g,"<i>$1</i>");
+    t = t.replace(/【([^】]*)】/g,'<span class="md-flag">$1</span>');
+    var m;
+    if((m = t.match(/^#{1,6}\s+(.+)$/))){ html.push('<div class="md-h" style="padding-left:'+pad+'px">'+m[1]+"</div>"); }
+    else if((m = t.match(/^[-•]\s+(.+)$/))){ html.push('<div class="md-li" style="padding-left:'+(pad+14)+'px">• '+m[1]+"</div>"); }
+    else if((m = t.match(/^(\d{1,2})[.、)]\s+(.+)$/))){ html.push('<div class="md-step" style="padding-left:'+pad+'px"><span class="md-no">'+m[1]+"</span>"+m[2]+"</div>"); }
+    else { html.push('<div class="md-p" style="padding-left:'+pad+'px">'+t+"</div>"); }
+  });
+  return html.join("");
+}
+
+var running = false;
+
+async function run(ridOverride){
+  if(running) return;
+  var ridEl = document.getElementById("rid");
+  var rid = ridOverride != null ? ridOverride : ridEl.value;
+  rid = String(rid||"").trim();
+  if(!rid){ document.getElementById("out").innerHTML = '<div class="card"><span class="tag warn">请先选择或输入记录 ID</span></div>'; return; }
+  ridEl.value = rid;
+  var ag = document.getElementById("ag").checked;
+  var out = document.getElementById("out");
+  var btn = document.getElementById("btnRun");
+  running = true; btn.disabled = true;
+  out.innerHTML = '<div class="card"><div class="loading">⏳ '+(ag?"Agent 编排中(查 SOP + 查历史,约 10-20 秒)…":"RAG 检索中…")+"</div></div>";
   try{
-    const d = await fetch(`/agent/dispose?record_id=${rid}&use_agent=${ag}`).then(r=>r.json());
-    if(d.detail){ out.innerHTML = `<div class="card"><span class="tag alert">错误</span> ${d.detail}</div>`; return; }
-    let html = '<div class="card">';
-    html += `<div class="label">检出缺陷</div>`;
-    html += `<div style="margin-bottom:12px"><span class="tag alert">${d.top_label||'-'}</span> 状态:${d.status||'-'} · 记录 #${d.record_id}</div>`;
+    var d = await fetch("/agent/dispose?record_id="+encodeURIComponent(rid)+"&use_agent="+ag).then(function(r){ return r.json(); });
+    if(d.detail){ out.innerHTML = '<div class="card"><span class="tag alert">错误</span> '+esc(d.detail)+"</div>"; return; }
+    var html = '<div class="card">';
+    html += '<div class="label">检出缺陷</div>';
+    html += '<div style="margin-bottom:12px"><span class="tag alert">'+esc(d.top_label||"-")+'</span> 状态:'+(d.status?('<span class="status-pill '+esc(d.status)+'">'+esc(d.status)+"</span>"):"-")+" · 记录 #"+esc(d.record_id)+"</div>";
     if(d.found === false){
-      html += `<div><span class="tag warn">未命中</span> ${d.dispose||''}</div>`;
+      html += '<div><span class="tag warn">未命中</span> '+esc(d.dispose||"")+"</div>";
     } else {
-      if(d.needs_confirmation){
-        html += `<div class="label">⚠ 高危动作(需人工确认)</div>`;
-        (d.high_risk_actions||[]).forEach(a=>{
-          html += `<div class="risk-item"><span class="tag warn">${a}</span>
-            <button class="sec" onclick="confirm('${rid}','${a}',true)">批准</button>
-            <button class="sec" onclick="confirm('${rid}','${a}',false)">拒绝</button>
-            <span id="cf-${a}" class="muted"></span></div>`;
+      if(d.needs_confirmation && (d.high_risk_actions||[]).length){
+        html += '<div class="label">⚠ 高危动作(需人工确认)</div>';
+        (d.high_risk_actions||[]).forEach(function(a,i){
+          html += '<div class="risk-item"><span class="tag warn">'+esc(a)+'</span>'+
+            '<button class="btn-sec" data-cf="'+i+'" data-ok="1">批准</button>'+
+            '<button class="btn-sec" data-cf="'+i+'" data-ok="0">拒绝</button>'+
+            '<span data-cfret="'+i+'" class="muted"></span></div>';
+        });
+        html += '<div id="riskActions" data-rid="'+esc(d.record_id)+'" hidden></div>';
+        // 把动作名存到 DOM,避免往 onclick 里拼字符串
+        (d.high_risk_actions||[]).forEach(function(a,i){
+          html += '<input type="hidden" data-action="'+i+'" value="'+esc(a)+'">';
         });
       } else {
-        html += `<div><span class="tag ok">无高危动作</span> 可按方案直接处置</div>`;
+        html += '<div><span class="tag ok">无高危动作</span> 可按方案直接处置</div>';
       }
-      html += `<div class="label" style="margin-top:14px">处置方案</div>`;
-      html += `<pre>${esc(d.dispose||'')}</pre>`;
+      html += '<div class="label" style="margin-top:14px">处置方案</div>';
+      html += '<div class="md-body">'+mdRender(d.dispose||"")+"</div>";
     }
-    html += '</div>';
+    html += "</div>";
     out.innerHTML = html;
-  }catch(e){ out.innerHTML = `<div class="card"><span class="tag alert">请求失败</span> ${e}</div>`; }
+  }catch(e){
+    out.innerHTML = '<div class="card"><span class="tag alert">请求失败</span> '+esc(e)+"</div>";
+  }finally{
+    running = false; btn.disabled = false;
+  }
 }
-async function confirm(rid, action, approved){
-  const el = document.getElementById('cf-'+action);
-  el.textContent = '提交中...';
+
+// 高危确认:事件委托,不往 onclick 里拼用户内容
+document.getElementById("out").addEventListener("click", async function(ev){
+  var btn = ev.target.closest("[data-cf]");
+  if(!btn) return;
+  var host = document.getElementById("riskActions");
+  var rid = Number(host && host.dataset.rid);
+  var actionEl = document.querySelector('[data-action="'+btn.dataset.cf+'"]');
+  var action = actionEl ? actionEl.value : "";
+  var ret = document.querySelector('[data-cfret="'+btn.dataset.cf+'"]');
+  if(ret) ret.textContent = "提交中…";
   try{
-    await fetch('/agent/dispose/confirm',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({record_id:+rid,action,approved,operator:'web工作台'})}).then(r=>r.json());
-    el.innerHTML = approved ? '<span class="tag ok">✓ 已批准</span>' : '<span class="tag alert">✗ 已拒绝</span>';
-  }catch(e){ el.textContent = '失败:'+e; }
+    await fetch("/agent/dispose/confirm",{
+      method:"POST",headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({record_id:rid, action:action, approved:btn.dataset.ok==="1", operator:"处置工作台"})
+    });
+    if(ret) ret.innerHTML = btn.dataset.ok==="1" ? '<span class="tag ok">✓ 已批准</span>' : '<span class="tag alert">✗ 已拒绝</span>';
+  }catch(e){ if(ret) ret.textContent = "失败:" + e; }
+});
+
+// 最近记录列表(alert 优先),点击即查
+async function loadRecent(){
+  var box = document.getElementById("recList");
+  try{
+    var rows = await fetch("/records?limit=30").then(function(r){ return r.json(); });
+    rows = (rows||[]).slice().sort(function(a,b){
+      return (a.status==="alert"?0:1)-(b.status==="alert"?0:1) || b.id-a.id;
+    }).slice(0,12);
+    if(!rows.length){ box.innerHTML = '<span class="muted">暂无检测记录,先去主看板上传缺陷图检测。</span>'; return; }
+    box.innerHTML = rows.map(function(r){
+      var lab = r.top_label ? (r.top_label + (r.num_detections?" ×"+r.num_detections:"")) : (r.status==="alert"?"检出":"无检出");
+      var t = String(r.created_at||"").replace("T"," ").slice(5,16);
+      return '<div class="rec-item" data-rid="'+r.id+'">'+
+        '<span class="rid">#'+r.id+'</span>'+
+        '<span class="rlab">'+esc(lab)+'</span>'+
+        (r.status?'<span class="status-pill '+esc(r.status)+'">'+esc(r.status)+"</span>":"")+
+        '<span class="rt">'+esc(t)+"</span></div>";
+    }).join("");
+    box.querySelectorAll("[data-rid]").forEach(function(it){
+      it.onclick = function(){ run(it.dataset.rid); };
+    });
+  }catch(e){
+    box.innerHTML = '<span class="muted" style="color:#b91c1c">记录加载失败:'+esc(e)+"</span>";
+  }
 }
-function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+
+document.getElementById("btnRun").onclick = function(){ run(); };
+document.getElementById("rid").addEventListener("keydown", function(e){ if(e.key==="Enter") run(); });
+loadRecent();
 </script>
 </body>
 </html>

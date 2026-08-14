@@ -119,6 +119,16 @@ tr.selected td{background:#fff7ed}
 .chip.filter{cursor:pointer;border:1px solid #99f6e4;background:#ecfdf5;color:#0f766e;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:650}
 .chip.filter.active{background:#0d9488;color:#fff;border-color:#0d9488}
 .chip.filter-all{background:#fff;border:1px solid #d7dee8;color:#4b5563}
+/* Agent 处置方案 markdown 渲染 */
+.md-body{font-size:13px;line-height:1.75;color:#1f2937;max-height:320px;overflow:auto}
+.md-body .md-h{font-weight:750;color:#111827;margin:10px 0 2px}
+.md-body .md-p{margin:3px 0}
+.md-body .md-li{margin:2px 0;color:#374151}
+.md-body .md-step{margin:5px 0;display:flex;gap:8px;align-items:flex-start}
+.md-body .md-no{flex:none;width:20px;height:20px;border-radius:6px;background:#0d9488;color:#fff;font-size:12px;font-weight:750;display:grid;place-items:center;margin-top:2px}
+.md-body .md-flag{background:#fef3c7;border:1px solid #fde68a;color:#92400e;border-radius:6px;padding:0 6px;font-weight:650;font-size:12px}
+.md-body .md-gap{height:8px}
+.md-body b{color:#0f172a}
 </style>
 </head>
 <body>
@@ -142,7 +152,7 @@ tr.selected td{background:#fff7ed}
     <div class="topbar">
       <div>
         <h1 id="pageTitle">检测工作台</h1>
-        <div class="sub" id="pageSub">ShopInspect v0.1.2 · 详情弹窗 · 扩展字段</div>
+        <div class="sub" id="pageSub">ShopInspect v0.1.4 · 缺陷模型 + RAG 处置</div>
       </div>
       <div class="row">
         <span class="badge" id="healthBadge">检查中…</span>
@@ -319,7 +329,7 @@ tr.selected td{background:#fff7ed}
             <span id="modalDisposeStatus" style="font-size:12px;color:#6b7280"></span>
           </div>
           <div id="modalDisposeRisk" style="margin-bottom:8px"></div>
-          <pre id="modalDisposeBody" style="white-space:pre-wrap;font-size:12px;line-height:1.6;margin:0;font-family:inherit;max-height:300px;overflow:auto"></pre>
+          <div id="modalDisposeBody" class="md-body"></div>
         </div>
       </div>
     </div>
@@ -327,6 +337,6 @@ tr.selected td{background:#fff7ed}
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="/static/app.js?v=014rag"></script>
+<script src="/static/app.js?v=015"></script>
 </body>
 </html>

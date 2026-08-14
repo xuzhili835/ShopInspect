@@ -1,5 +1,41 @@
 const el = (id) => document.getElementById(id);
 
+function escapeHtml(s) {
+  return String(s == null ? "" : s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+// 轻量 Markdown 渲染(Agent 处置方案输出是 md 文本,不引外部库):
+// 支持 # 标题 / **粗体** / *斜体* / - 列表 / 1. 步骤 / 【】高亮 / 缩进层级
+function mdRender(md) {
+  var lines = String(md || "").split(/\r?\n/);
+  var html = [];
+  lines.forEach(function (raw) {
+    var line = raw.replace(/\s+$/, "");
+    if (!line.trim()) { html.push('<div class="md-gap"></div>'); return; }
+    var indent = Math.min(2, Math.floor((raw.match(/^\s*/) || [""])[0].length / 3));
+    var pad = indent * 18;
+    var t = escapeHtml(line.trim());
+    t = t.replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+    t = t.replace(/\*([^*\s][^*]*)\*/g, "<i>$1</i>");
+    t = t.replace(/【([^】]*)】/g, '<span class="md-flag">$1</span>');
+    var m;
+    if ((m = t.match(/^#{1,6}\s+(.+)$/))) {
+      html.push('<div class="md-h" style="padding-left:' + pad + 'px">' + m[1] + "</div>");
+    } else if ((m = t.match(/^[-•]\s+(.+)$/))) {
+      html.push('<div class="md-li" style="padding-left:' + (pad + 14) + 'px">• ' + m[1] + "</div>");
+    } else if ((m = t.match(/^(\d{1,2})[.、)]\s+(.+)$/))) {
+      html.push('<div class="md-step" style="padding-left:' + pad + 'px"><span class="md-no">' + m[1] + "</span>" + m[2] + "</div>");
+    } else {
+      html.push('<div class="md-p" style="padding-left:' + pad + 'px">' + t + "</div>");
+    }
+  });
+  return html.join("");
+}
+
 let mode = "upload";
 let stream = null;
 let liveRunning = false;
@@ -886,7 +922,7 @@ function bindUi() {
       } else {
         riskBox.innerHTML = '<span style="color:#166534;font-size:12px">✓ 无高危动作,可按方案处置</span>';
       }
-      body.textContent = j.dispose || "";
+      body.innerHTML = mdRender(j.dispose || "");
     } catch (e) {
       status.textContent = "请求失败";
       body.textContent = String(e);
