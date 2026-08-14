@@ -1,0 +1,8 @@
+# NEU-DET 钢材表面缺陷(6 类) - YOLO 训练配置
+# path 相对项目根(python -m defect_model.train 从项目根运行)
+path: defect_model/dataset/NEU-DET
+train: train/images
+val: valid/images
+
+nc: 6
+names: ['crazing', 'inclusion', 'patches', 'pitted_surface', 'rolled-in_scale', 'scratches']

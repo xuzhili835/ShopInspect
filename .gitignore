@@ -16,3 +16,12 @@ Thumbs.db
 *.log
 .idea/
 .vscode/
+
+# rag_agent / 缺陷模型训练产物
+runs/
+defect_model/dataset/
+defect_model/dataset_src/
+defect_model/*.pt
+models/*.pt
+rag_agent/data/chroma/
+.zcode/
