@@ -1,12 +1,21 @@
 """rag_agent FastAPI 路由,挂在 /agent(由 app/main.py include)。"""
 from __future__ import annotations
 
+from pathlib import Path
+
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 
 from app.db import get_record
 
 router = APIRouter(tags=["rag-agent"])
+
+
+@router.get("/", response_class=HTMLResponse)
+def workspace():
+    """处置工作台(独立前端页,零侵入 ShopInspect static/)。"""
+    return (Path(__file__).parent / "ui.html").read_text(encoding="utf-8")
 
 
 @router.get("/dispose")

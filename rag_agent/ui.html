@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>缺陷处置工作台 · ShopInspect</title>
+<style>
+  * { box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; margin: 0; background: #f5f7fa; color: #1f2937; }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .sub { color: #6b7280; font-size: 13px; margin-bottom: 18px; }
+  .card { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 18px; margin-bottom: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  input[type=number] { padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; width: 110px; font-size: 14px; }
+  button { padding: 8px 16px; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; font-size: 14px; }
+  button:hover { background: #1d4ed8; }
+  button.sec { background: #e5e7eb; color: #374151; }
+  button.sec:hover { background: #d1d5db; }
+  .tag { display: inline-block; padding: 2px 9px; border-radius: 12px; font-size: 12px; margin-right: 6px; }
+  .tag.alert { background: #fee2e2; color: #b91c1c; }
+  .tag.ok { background: #dcfce7; color: #166534; }
+  .tag.warn { background: #fef3c7; color: #92400e; }
+  pre { white-space: pre-wrap; word-wrap: break-word; font-family: "Consolas", "Menlo", monospace; font-size: 13px; line-height: 1.65; margin: 0; }
+  .label { font-size: 12px; color: #6b7280; margin-bottom: 6px; font-weight: 600; }
+  .risk-item { display: flex; align-items: center; gap: 8px; padding: 9px 11px; background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; margin-bottom: 6px; }
+  .muted { color: #9ca3af; font-size: 12px; }
+  .loading { color: #2563eb; }
+  a { color: #2563eb; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🛠 缺陷处置工作台</h1>
+  <div class="sub">ShopInspect · Agent 编排(查 SOP + 查历史)+ 高危动作人工确认 · <a href="/" target="_blank">返回主看板</a></div>
+
+  <div class="card">
+    <div class="row">
+      <span>检测记录 ID:</span>
+      <input id="rid" type="number" value="9">
+      <label><input type="checkbox" id="ag" checked> 用 Agent(否则纯 RAG)</label>
+      <button onclick="run()">查询处置方案</button>
+    </div>
+    <div class="muted" style="margin-top:8px">提示:先在主看板上传缺陷图检测,拿到记录 ID 后填这里查询处置。</div>
+  </div>
+
+  <div id="out"></div>
+</div>
+
+<script>
+async function run(){
+  const rid = document.getElementById('rid').value;
+  const ag = document.getElementById('ag').checked;
+  const out = document.getElementById('out');
+  out.innerHTML = '<div class="card loading">⏳ Agent 编排中(查 SOP + 查历史,约 10-20 秒)...</div>';
+  try{
+    const d = await fetch(`/agent/dispose?record_id=${rid}&use_agent=${ag}`).then(r=>r.json());
+    if(d.detail){ out.innerHTML = `<div class="card"><span class="tag alert">错误</span> ${d.detail}</div>`; return; }
+    let html = '<div class="card">';
+    html += `<div class="label">检出缺陷</div>`;
+    html += `<div style="margin-bottom:12px"><span class="tag alert">${d.top_label||'-'}</span> 状态:${d.status||'-'} · 记录 #${d.record_id}</div>`;
+    if(d.found === false){
+      html += `<div><span class="tag warn">未命中</span> ${d.dispose||''}</div>`;
+    } else {
+      if(d.needs_confirmation){
+        html += `<div class="label">⚠ 高危动作(需人工确认)</div>`;
+        (d.high_risk_actions||[]).forEach(a=>{
+          html += `<div class="risk-item"><span class="tag warn">${a}</span>
+            <button class="sec" onclick="confirm('${rid}','${a}',true)">批准</button>
+            <button class="sec" onclick="confirm('${rid}','${a}',false)">拒绝</button>
+            <span id="cf-${a}" class="muted"></span></div>`;
+        });
+      } else {
+        html += `<div><span class="tag ok">无高危动作</span> 可按方案直接处置</div>`;
+      }
+      html += `<div class="label" style="margin-top:14px">处置方案</div>`;
+      html += `<pre>${esc(d.dispose||'')}</pre>`;
+    }
+    html += '</div>';
+    out.innerHTML = html;
+  }catch(e){ out.innerHTML = `<div class="card"><span class="tag alert">请求失败</span> ${e}</div>`; }
+}
+async function confirm(rid, action, approved){
+  const el = document.getElementById('cf-'+action);
+  el.textContent = '提交中...';
+  try{
+    await fetch('/agent/dispose/confirm',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({record_id:+rid,action,approved,operator:'web工作台'})}).then(r=>r.json());
+    el.innerHTML = approved ? '<span class="tag ok">✓ 已批准</span>' : '<span class="tag alert">✗ 已拒绝</span>';
+  }catch(e){ el.textContent = '失败:'+e; }
+}
+function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;'); }
+</script>
+</body>
+</html>
