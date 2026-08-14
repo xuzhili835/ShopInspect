@@ -660,6 +660,12 @@ async function showDetail(id) {
       }
     }
 
+    // 重置处置方案区(每次打开新记录清空上次的 Agent 结果)
+    if (el("modalDisposeWrap")) el("modalDisposeWrap").style.display = "none";
+    if (el("modalDisposeBody")) el("modalDisposeBody").textContent = "";
+    if (el("modalDisposeRisk")) el("modalDisposeRisk").innerHTML = "";
+    if (el("modalDisposeStatus")) el("modalDisposeStatus").textContent = "";
+
     el("detailModal").classList.add("show");
     if (el("detailBox")) el("detailBox").style.display = "none";
   } catch (e) {
@@ -832,6 +838,64 @@ function bindUi() {
         tr.classList.toggle("selected", e.target.checked);
       });
       updateSelCount();
+    };
+  }
+
+  // === rag_agent 处置方案接入(最小侵入,新增逻辑不动既有代码)===
+  async function loadDispose(rid) {
+    var wrap = el("modalDisposeWrap");
+    var status = el("modalDisposeStatus");
+    var riskBox = el("modalDisposeRisk");
+    var body = el("modalDisposeBody");
+    if (!wrap) return;
+    wrap.style.display = "block";
+    status.textContent = "Agent 编排中(查 SOP + 查历史,约 10-20 秒)…";
+    riskBox.innerHTML = "";
+    body.textContent = "";
+    try {
+      var j = await fetch("/agent/dispose?record_id=" + rid + "&use_agent=true").then(function (r) { return r.json(); });
+      if (j.detail) { status.textContent = "失败"; body.textContent = String(j.detail); return; }
+      status.textContent = "缺陷: " + (j.top_label || "-") + " · 状态: " + (j.status || "-");
+      if (j.found === false) {
+        body.textContent = j.dispose || "未找到处置方案";
+        return;
+      }
+      // 高危动作确认按钮
+      if (j.needs_confirmation && Array.isArray(j.high_risk_actions) && j.high_risk_actions.length) {
+        riskBox.innerHTML = j.high_risk_actions.map(function (a) {
+          return '<div style="display:flex;align-items:center;gap:6px;padding:6px 8px;background:#fff7ed;border:1px solid #fed7aa;border-radius:6px;margin-bottom:4px">' +
+            '<span style="color:#92400e;font-size:12px">⚠ ' + a + '</span>' +
+            '<button type="button" class="btn btn-secondary btn-xs" data-cf="' + a + '" data-ok="1">批准</button>' +
+            '<button type="button" class="btn btn-secondary btn-xs" data-cf="' + a + '" data-ok="0">拒绝</button>' +
+            '<span data-cfret="' + a + '" style="font-size:11px;color:#9ca3af"></span></div>';
+        }).join("");
+        riskBox.querySelectorAll("[data-cf]").forEach(function (btn) {
+          btn.onclick = async function () {
+            var ret = riskBox.querySelector('[data-cfret="' + btn.dataset.cf + '"]');
+            ret.textContent = "提交中…";
+            try {
+              await fetch("/agent/dispose/confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ record_id: rid, action: btn.dataset.cf, approved: btn.dataset.ok === "1", operator: "看板" })
+              });
+              ret.innerHTML = btn.dataset.ok === "1" ? '<span style="color:#166534">✓ 已批准</span>' : '<span style="color:#b91c1c">✗ 已拒绝</span>';
+            } catch (e) { ret.textContent = "失败"; }
+          };
+        });
+      } else {
+        riskBox.innerHTML = '<span style="color:#166534;font-size:12px">✓ 无高危动作,可按方案处置</span>';
+      }
+      body.textContent = j.dispose || "";
+    } catch (e) {
+      status.textContent = "请求失败";
+      body.textContent = String(e);
+    }
+  }
+  if (el("modalDispose")) {
+    el("modalDispose").onclick = function () {
+      if (currentDetailId == null) { toast("无当前记录", "err"); return; }
+      loadDispose(currentDetailId);
     };
   }
 

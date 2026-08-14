@@ -133,6 +133,9 @@ tr.selected td{background:#fff7ed}
       <button type="button" data-page="history">历史记录</button>
       <button type="button" data-page="about">说明</button>
     </nav>
+    <div style="margin-top:auto;padding-top:10px;border-top:1px solid var(--line)">
+      <a href="/agent/" target="_blank" class="btn btn-primary" style="display:block;text-align:center;text-decoration:none">🛠 缺陷处置工作台</a>
+    </div>
   </aside>
 
   <div class="main">
@@ -288,6 +291,7 @@ tr.selected td{background:#fff7ed}
     <div class="modal-head">
       <h3>检测详情 #<span id="modalId"></span></h3>
       <div class="row">
+        <button type="button" class="btn btn-primary btn-xs" id="modalDispose">🛠 查看处置方案</button>
         <button type="button" class="btn btn-danger btn-xs" id="modalDelete">删除</button>
         <button type="button" class="btn btn-secondary btn-xs" id="modalClose">关闭</button>
       </div>
@@ -309,12 +313,20 @@ tr.selected td{background:#fff7ed}
           <summary style="cursor:pointer;color:#6b7280;font-size:12px">原始 JSON</summary>
           <pre id="modalJson" style="margin-top:8px;background:#f8fafc;border:1px solid #e6ebf2;border-radius:10px;padding:10px;max-height:150px;overflow:auto;font-size:12px"></pre>
         </details>
+        <div id="modalDisposeWrap" style="display:none;margin-top:12px;border:1px solid #2563eb;border-radius:10px;padding:12px;background:#f8fbff">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <b style="color:#1d4ed8">🛠 Agent 处置方案</b>
+            <span id="modalDisposeStatus" style="font-size:12px;color:#6b7280"></span>
+          </div>
+          <div id="modalDisposeRisk" style="margin-bottom:8px"></div>
+          <pre id="modalDisposeBody" style="white-space:pre-wrap;font-size:12px;line-height:1.6;margin:0;font-family:inherit;max-height:300px;overflow:auto"></pre>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="/static/app.js?v=013"></script>
+<script src="/static/app.js?v=014rag"></script>
 </body>
 </html>
