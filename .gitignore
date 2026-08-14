@@ -25,3 +25,5 @@ defect_model/*.pt
 models/*.pt
 rag_agent/data/chroma/
 .zcode/
+runs/
+.playwright-cli/
