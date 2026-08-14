@@ -1,6 +1,6 @@
 # defect_model — NEU-DET 缺陷检测模型训练
 
-何承恩负责。基于 Ultralytics YOLO11 在 NEU-DET(钢材表面缺陷 6 类)上训练缺陷检测模型,产物交付周靖接入 ShopInspect。
+xuzhili835负责。基于 Ultralytics YOLO11 在 NEU-DET(钢材表面缺陷 6 类)上训练缺陷检测模型,产物交付lenhui731接入 ShopInspect。
 
 ## 类名(内嵌进权重,与 rag_agent SOP 对齐)
 `crazing / inclusion / patches / pitted_surface / rolled-in_scale / scratches`
@@ -18,7 +18,7 @@ python -m defect_model.train --epochs 20 --imgsz 256 # 快速 demo(几十分钟)
 - 训练输出:`runs/defect/neu/`(gitignore)
 - 交付权重:`models/def_best.pt`(gitignore)→ 走 GitHub Release
 
-## 周靖接入
+## lenhui731接入
 改 `config.yaml: model_path: models/def_best.pt`,重启即可,零代码改动。
 
 ## 对齐点

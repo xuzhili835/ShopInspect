@@ -1,6 +1,6 @@
 # model-defect-v1 · NEU-DET 缺陷检测模型
 
-何承恩训练,交付周靖接入 ShopInspect。
+xuzhili835训练,交付lenhui731接入 ShopInspect。
 
 ## 模型
 - 文件:`def_best.pt`(5.4 MB)
@@ -27,7 +27,7 @@
 - Precision:0.741 / Recall:0.783
 - 推理速度:27.6 ms/张(CPU)
 
-## 周靖接入(零代码改动)
+## lenhui731接入(零代码改动)
 `config.yaml` 改一行:`model_path: models/def_best.pt`,重启即可。
 
 ## 对齐点

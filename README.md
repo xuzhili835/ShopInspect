@@ -1,18 +1,41 @@
 # 车间质检台 · ShopInspect
 
-面向产线工位的外观质检 **应用台**（V2）：摄像头 / 图片检测 → YOLO 推理 → FastAPI → SQLite 追溯 → Web 看板 → **缺陷处置 RAG + Agent**。
+面向产线工位的外观质检 **应用台**（V1.3）：摄像头 / 图片检测 → YOLO 推理 → FastAPI → SQLite 追溯 → Web 看板。
 
 > **定位：AI 应用工程师作品。**  
 > 目标是把视觉模型接到可演示、可追溯的业务闭环，而不是自研缺陷 mAP。  
-> V2 已切换自训缺陷模型 `models/def_best.pt`（NEU-DET 6 类，mAP50=0.817），并新增 `rag_agent/` 处置模块：检测出缺陷 → RAG 查维修 SOP → Agent 给多步处置方案 → 高危动作人工确认（HITL）。
-
-> **合作说明**：本仓库为合作项目 [lenhui731/ShopInspect](https://github.com/lenhui731/ShopInspect) 的 fork。
-> 周靖负责检测工程闭环（FastAPI + SQLite + 看板 + 摄像头，V1.3）；何承恩（本 fork）新增 **缺陷模型训练 + rag_agent（RAG 缺陷处置 + Agent + HITL）**。
+> V1 使用官方通用 YOLO 权重验证通路；缺陷专用权重预留 `models/defect_best.pt`（V2）。
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688)](https://fastapi.tiangolo.com/)
 [![YOLO](https://img.shields.io/badge/Ultralytics-YOLO11-red)](https://docs.ultralytics.com/)
-[![LangChain](https://img.shields.io/badge/LangChain-LangGraph-1C3C3C)](https://github.com/langchain-ai/langgraph)
+
+---
+
+## 本 fork 新增（V2，基于上游 V1.3）
+
+本 fork（[xuzhili835/ShopInspect](https://github.com/xuzhili835/ShopInspect)）基于 [lenhui731/ShopInspect](https://github.com/lenhui731/ShopInspect)（检测工程闭环 V1.3），新增两块能力。以下正文保持上游原版 README 不变。
+
+1. **缺陷检测模型 `defect_model/`**：NEU-DET 数据集（钢材表面 6 类缺陷）自训 `def_best.pt`，mAP50=0.817，CPU ~28ms/张。权重经 [Release model-defect-v1](https://github.com/xuzhili835/ShopInspect/releases/tag/model-defect-v1) 分发（`*.pt` 不进 git）；下载后放 `models/`，`config.yaml → model_path` 即切换。
+2. **缺陷处置 `rag_agent/`（RAG + Agent + HITL）**：检测出缺陷 → RAG 查维修 SOP（bge-m3 + Chroma，带来源引用与拒答）→ Agent 多步处置方案（LangGraph ReAct，查 SOP + 查历史）→ 高危动作（换件 / 停机等）人工确认。LangChain + LangGraph，单进程单端口挂载（`/agent`），看板侧栏新增「缺陷处置」页。
+
+上游 V2+ 预留清单中的「缺陷自训模型」「缺陷 SOP 知识库（RAG）」两项已在本 fork 实现，其余预留项见文末。
+
+### fork 额外的安装步骤
+
+```powershell
+# rag_agent 依赖（langchain / chromadb 等，装同一 venv）
+pip install -r rag_agent/requirements.txt -i https://mirrors.aliyun.com/pypi/simple
+
+# 密钥：复制模板后填 SiliconFlow API key（不进 git）
+copy rag_agent\.env.example rag_agent\.env
+
+# 首次建向量库：把 rag_agent/data/sop/*.md 灌进 Chroma
+python -m rag_agent.build_index
+
+# 缺陷权重：从 Release model-defect-v1 下载 def_best.pt 放 models/
+# （未下载时可将 config.yaml 的 model_path 改回 yolo11n.pt 用通用权重）
+```
 
 ---
 
@@ -26,36 +49,29 @@ ShopInspect 把检测能力收敛成一条产线可用链路：
 2. **推理**：YOLO 封装（长边缩放、耗时、置信度、标注图）
 3. **落库**：结构化检测结果 + 工单号 / 批次号
 4. **看板**：KPI、历史筛选、详情大图、CSV 导出
-5. **处置**（V2 新增）：检出缺陷 → RAG 查维修 SOP → Agent 多步方案 → 高危人工确认
 
-本项目体现的工程能力点：
+适合简历展示的能力点：
 
 - 视觉模型工程化接入（Ultralytics YOLO）
 - 后端服务与数据追溯（FastAPI + SQLite）
 - 产线可用的 Web 操作台（上传 / 实时检测 / 筛选导出）
 - 配置驱动、可切换自训权重
-- RAG + Agent 工程化（LangChain / LangGraph / Chroma，Function Calling + HITL）
 
 ---
 
-## 功能一览（V2）
+## 功能一览（V1.3）
 
 | 能力 | 说明 |
 |------|------|
 | 桌面摄像头实时检测 | `scripts/run_cam.py`（`q` 退出，`s` 保存并落库） |
 | 图片 / 路径检测 | `POST /detect/image`、`POST /detect/path` |
 | 网页摄像头 | 看板内 `getUserMedia`：单帧 / 连续检测 |
-| 缺陷专用模型 | `models/def_best.pt`（NEU-DET 6 类，mAP50=0.817，CPU ~28ms/张） |
 | 结构化结果 | label / confidence / bbox_xyxy / elapsed_ms / status |
 | 工单与批次 | 检测时可填 `work_order` / `batch_id`，历史可筛 |
 | 历史追溯 | SQLite `data/shopinspect.db` + 缩略图 / 详情弹窗 |
 | 统计与筛选 | `GET /stats`、来源筛选、类别 chips、工单/批次筛选 |
 | 导出 | `GET /records/export.csv`（UTF-8 BOM，Excel 可直接开） |
-| **缺陷处置 RAG** | `GET /agent/dispose`：按缺陷类检索维修 SOP，带来源引用 + 无命中拒答 |
-| **处置 Agent** | LangGraph ReAct 编排（查 SOP + 查历史同类），出多步处置方案 |
-| **高危人工确认** | 换件 / 停机等高危动作 `POST /agent/dispose/confirm` 批准后才算数 |
-| **处置工作台** | `GET /agent/` 独立前端页；看板详情弹窗亦可一键看处置方案 |
-| 可切换权重 | `config.yaml` → `model_path` |
+| 可切换权重 | `config.yaml` → `model_path`（预留缺陷专用模型） |
 
 ### 工程优化点
 
@@ -71,7 +87,7 @@ ShopInspect 把检测能力收敛成一条产线可用链路：
 ## 快速开始（Windows / CPU）
 
 ```powershell
-git clone https://github.com/xuzhili835/ShopInspect.git
+git clone https://github.com/lenhui731/ShopInspect.git
 cd ShopInspect
 
 python -m venv .venv
@@ -81,30 +97,16 @@ python -m venv .venv
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
 
-# rag_agent 依赖（langchain / chromadb 等，装同一 venv）
-pip install -r rag_agent/requirements.txt -i https://mirrors.aliyun.com/pypi/simple
-
-# rag_agent 密钥：复制模板后填 SiliconFlow API key（不进 git）
-copy rag_agent\.env.example rag_agent\.env
-
-# 首次建向量库：把 rag_agent/data/sop/*.md 灌进 Chroma
-python -m rag_agent.build_index
-
-# 缺陷权重 *.pt 不进 git：从 GitHub Release（model-defect-v1，若已发布）下载
-# def_best.pt 放到 models/；或自己用 defect_model/train.py 训练
-# （或先用通用权重：config.yaml 里 model_path 改回 yolo11n.pt）
-
 # 探测摄像头
 python scripts/probe_camera.py
 
 # 实时桌面窗口（需本机有界面）
 python scripts/run_cam.py
 
-# API + 看板（rag_agent 随同进程一起挂载在 /agent）
+# API + 看板
 python scripts/run_api.py
 # 浏览器打开 http://127.0.0.1:8787/
 # Swagger:     http://127.0.0.1:8787/docs
-# 处置工作台:   http://127.0.0.1:8787/agent/
 ```
 
 ### 摄像头注意
@@ -132,14 +134,12 @@ python scripts/run_api.py
 
 | 项 | 含义 |
 |----|------|
-| `model_path` | 当前 `models/def_best.pt`（自训缺陷权重；可切回 `yolo11n.pt`） |
+| `model_path` | 默认 `yolo11n.pt`（首次自动下载；也可放到 `models/`） |
 | `confidence` / `iou` / `device` | 推理阈值 |
 | `max_infer_side` | 推理前长边限制，加速大图 |
 | `jpeg_quality` | 标注图压缩质量 |
 | `host` / `port` | 默认 `127.0.0.1:8787` |
 | `db_path` | SQLite 路径 |
-
-rag_agent 配置独立在 `rag_agent/.env`（SiliconFlow key、嵌入/对话模型、检索阈值），不碰 `config.yaml`。
 
 权重文件 `*.pt` 不入库；首次运行会按配置下载或读取本地模型。
 
@@ -160,9 +160,6 @@ rag_agent 配置独立在 `rag_agent/.env`（SiliconFlow key、嵌入/对话模�
 | DELETE | `/records?confirm=YES` | 清空 |
 | GET | `/records/export.csv` | 按当前筛选导出 CSV |
 | GET | `/files/{relative_path}` | 访问 `data/outputs/...` 标注图 |
-| GET | `/agent/dispose?record_id=X` | 缺陷处置：`use_agent=true` 走 Agent 多步方案（默认），`false` 走纯 RAG SOP |
-| POST | `/agent/dispose/confirm` | 高危动作（换件/停机/报废/补焊）人工批准 / 拒绝 |
-| GET | `/agent/` | 处置工作台前端页 |
 
 完整交互文档：启动后打开 `/docs`。
 
@@ -172,15 +169,8 @@ rag_agent 配置独立在 `rag_agent/.env`（SiliconFlow key、嵌入/对话模�
 
 ```text
 ShopInspect/
-  app/                 # FastAPI + 检测 / DB / 摄像头 / 静态看板（周靖）
+  app/                 # FastAPI + 检测 / DB / 摄像头 / 静态看板
     static/            # index.html + app.js
-  rag_agent/           # 缺陷处置 RAG + Agent + HITL（何承恩）
-    rag/               # chunker + bge-m3 嵌入 + Chroma + retriever
-    agent/             # LangGraph ReAct 编排（查SOP/查历史/给步骤）
-    hitl/              # 高危动作人工确认
-    data/sop/          # 6 类缺陷维修 SOP 语料
-    api.py             # /agent 路由（挂同进程 :8787/agent）
-  defect_model/        # NEU-DET 训练脚本 + 交付说明（何承恩）
   scripts/             # probe / run_cam / run_api / smoke_test
   data/
     inputs/            # 上传原图（gitignore 内容）
@@ -199,16 +189,15 @@ ShopInspect/
 - **视觉**：Ultralytics YOLO11、OpenCV、Pillow
 - **服务**：FastAPI、Uvicorn、Pydantic
 - **数据**：SQLite（自动 migrate 扩展字段）
-- **RAG / Agent**：LangChain + LangGraph（ReAct）、Chroma 向量库、bge-m3 嵌入 + Qwen3 对话（SiliconFlow，OpenAI 兼容）
 - **前端**：原生 HTML / CSS / JS 浅色企业后台看板
 - **运行**：Windows + CPU 优先（可改 `device`）
 
 ---
 
-## 设计取舍
+## 设计取舍（面试可讲）
 
 1. **先通路、后专用模型**  
-   V1 用通用 YOLO 验证「采图 → 推理 → 落库 → 看板」全链路；V2 用 NEU-DET 自训 `def_best.pt` 切换真缺陷告警，避免一上来卡在标注。
+   V1 用通用 YOLO 验证「采图 → 推理 → 落库 → 看板」全链路；缺陷数据集与 `defect_best.pt` 留给 V2，避免一上来卡在标注。
 
 2. **结果可追溯优先于炫技推流**  
    每条记录带耗时、分辨率、标签、置信度、工单/批次；支持筛选与 CSV，方便和产线质检台账对齐。
@@ -219,31 +208,29 @@ ShopInspect/
 4. **配置驱动换权重**  
    业务侧只改 `model_path`，检测封装与 API / 看板不用重写。
 
-5. **处置模块单进程接入，不动检测主链路**  
-   rag_agent 只在 `app/main.py` 挂一个 `include_router`，同进程 `import app.db` 读记录（不走网络）；RAG 用 metadata 按缺陷类隔离 + score_threshold 防幻觉 + 来源引用，高危动作必须 HITL 确认。
+---
 
-6. **AI 能力走 API、工程自己写**  
-   嵌入（bge-m3）和对话（Qwen3）走 SiliconFlow API，SOP 语料若涉密可换本地嵌入、上层不动；检索阈值、拒答、业务编排、HITL 规则都是自己写的业务逻辑。
+## 简历一句话
+
+独立完成车间质检台 **ShopInspect**：YOLO 检测 + FastAPI 服务 + SQLite 追溯 + Web 看板，支持工单/批次筛选与 CSV 导出，打通产线视觉质检应用闭环（V1 通用模型验证通路，可切换自训缺陷权重）。
+
+仓库：https://github.com/lenhui731/ShopInspect
 
 ---
 
-## V3+ 预留（未实现）
+## V2+ 预留（未实现）
 
+- 缺陷自训数据集 / `models/defect_best.pt`
 - 告警规则引擎（如某类数量 ≥ N 标红 / 推送）
-- MES / PLC 对接（Java 业务层方案已废弃，统一全 Python）
+- Java / Spring 业务层、MES / PLC 对接
+- 缺陷 SOP 知识库（RAG）
 - GPU / TensorRT 加速
 - WebSocket 长连接推流（当前仍是抓帧 HTTP）
 - 多用户登录与权限
-- SOP 语料管理界面（当前加 SOP = 丢 md 进 `rag_agent/data/sop/` 重建库）
-
-### 已在 V2 完成（原预留项）
-
-- ✅ 缺陷自训模型 `models/def_best.pt`（NEU-DET，mAP50=0.817，交付见 `defect_model/RELEASE_NOTES.md`）
-- ✅ 缺陷 SOP 知识库 + 处置 Agent（`rag_agent/`，见其 README）
 
 ### 与 MES 对接（预留口径）
 
-当前检测结果经 REST 落库，后续可由业务层消费 `/records`，或在检测成功回调中推送工单系统；V2 不实现 MES 协议本身。
+当前检测结果经 REST 落库，后续可由 Java 业务层消费 `/records`，或在检测成功回调中推送工单系统；V1 不实现 MES 协议本身。
 
 ---
 
@@ -261,4 +248,4 @@ python scripts\run_api.py
 
 ## License / 说明
 
-合作项目（周靖：检测工程闭环；何承恩：缺陷模型 + rag_agent），个人作品与求职演示用途。正式产线部署前请替换为业务缺陷模型，并按工厂网络安全与隐私规范改造鉴权、存储与对接方式。
+个人作品与求职演示项目。正式产线部署前请替换为业务缺陷模型，并按工厂网络安全与隐私规范改造鉴权、存储与对接方式。
