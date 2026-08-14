@@ -472,7 +472,7 @@ async function refreshStats() {
     if (el("kpiBoxes")) el("kpiBoxes").textContent = j.total_detections;
     const src = Object.entries(j.by_source || {}).map(function (kv) { return kv[0] + ":" + kv[1]; }).join(" · ");
     const labs = Object.entries(j.by_label || {}).slice(0, 4).map(function (kv) { return kv[0] + ":" + kv[1]; }).join(" · ");
-    if (el("kpiSource")) el("kpiSource").textContent = labs || src || "-";
+    if (el("kpiSource")) el("kpiSource").textContent = labs || "-";
     if (el("kpiRecordsFoot")) {
       el("kpiRecordsFoot").textContent =
         (src || "no source") +
@@ -644,37 +644,30 @@ async function showDetail(id) {
     el("modalId").textContent = j.id;
     el("modalSub").innerHTML =
       (j.status
-        ? ('<span class="status-pill ' + (j.status === "alert" ? "alert" : "clear") + '">' + j.status + "</span> ")
+        ? ('<span class="status-pill ' + (j.status === "alert" ? "alert" : "clear") + '">' + escapeHtml(j.status) + "</span> ")
         : "") +
-      (j.created_at || "") + " · " + (j.source || "");
+      escapeHtml(j.created_at || "") + " · " + escapeHtml(j.source || "");
 
     const size = j.image_width && j.image_height ? (j.image_width + " × " + j.image_height) : "-";
     const labels = j.labels || {};
     const labelText = Object.keys(labels).length
-      ? Object.keys(labels).map(function (k) { return k + " x" + labels[k]; }).join(" · ")
+      ? Object.keys(labels).map(function (k) { return escapeHtml(k) + " x" + labels[k]; }).join(" · ")
       : "-";
 
     el("modalKv").innerHTML =
-      "<span>模型</span><b>" + (j.model || "-") + "</b>" +
+      "<span>模型</span><b>" + escapeHtml(j.model || "-") + "</b>" +
       "<span>检出数</span><b>" + j.num_detections + "</b>" +
-      "<span>主类别</span><b>" + (j.top_label || "-") + "</b>" +
+      "<span>主类别</span><b>" + escapeHtml(j.top_label || "-") + "</b>" +
       "<span>类别分布</span><b>" + labelText + "</b>" +
       "<span>置信度</span><b>avg " + (j.avg_confidence != null ? j.avg_confidence : "-") +
       " / max " + (j.max_confidence != null ? j.max_confidence : "-") + "</b>" +
       "<span>阈值</span><b>" + (j.conf_used != null ? j.conf_used : "-") + "</b>" +
       "<span>耗时</span><b>" + (j.elapsed_ms != null ? (Math.round(j.elapsed_ms) + " ms") : "-") + "</b>" +
       "<span>分辨率</span><b>" + size + "</b>" +
-      "<span>工单号</span><b>" + (j.work_order || "-") + "</b>" +
-      "<span>批次号</span><b>" + (j.batch_id || "-") + "</b>" +
-      "<span>备注</span><b>" + (j.note || "-") + "</b>";
+      "<span>工单号</span><b>" + escapeHtml(j.work_order || "-") + "</b>" +
+      "<span>批次号</span><b>" + escapeHtml(j.batch_id || "-") + "</b>" +
+      "<span>备注</span><b>" + escapeHtml(j.note || "-") + "</b>";
 
-    showChips(
-      Object.keys(labels).map(function (k) {
-        return { label: k, confidence: 1 };
-      }),
-      "modalChips"
-    );
-    // better chips with counts
     const chips = el("modalChips");
     if (chips) {
       chips.innerHTML = "";
@@ -694,7 +687,7 @@ async function showDetail(id) {
         const bbox = (d.bbox_xyxy || []).map(function (v) { return Number(v).toFixed(1); }).join(", ");
         tr.innerHTML =
           "<td>" + (i + 1) + "</td>" +
-          "<td>" + d.label + "</td>" +
+          "<td>" + escapeHtml(d.label) + "</td>" +
           "<td>" + (Number(d.confidence) * 100).toFixed(1) + "%</td>" +
           "<td>[" + bbox + "]</td>";
         body.appendChild(tr);
@@ -721,7 +714,6 @@ async function showDetail(id) {
     if (el("modalDisposeStatus")) el("modalDisposeStatus").textContent = "";
 
     el("detailModal").classList.add("show");
-    if (el("detailBox")) el("detailBox").style.display = "none";
   } catch (e) {
     toast("打开详情失败: " + e.message, "err");
   }
@@ -835,21 +827,6 @@ function bindUi() {
       }
     };
   });
-
-  if (el("btnDeleteOne")) {
-    el("btnDeleteOne").onclick = async function () {
-      if (currentDetailId == null) return;
-      if (!confirm("确定删除记录 #" + currentDetailId + "？")) return;
-      try {
-        await deleteOne(currentDetailId);
-        await refreshRecords();
-        await refreshStats();
-        updateSelCount();
-      } catch (e) {
-        toast(e.message, "err");
-      }
-    };
-  }
 
   if (el("btnBatchDelete")) {
     el("btnBatchDelete").onclick = async function () {

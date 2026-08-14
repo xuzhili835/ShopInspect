@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" href='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="%230d9488"/><text x="16" y="21" font-size="13" font-weight="800" text-anchor="middle" fill="white" font-family="Segoe UI,sans-serif">SI</text></svg>' />
 <title>车间质检台 · ShopInspect</title>
 <style>
 :root{
@@ -164,7 +165,7 @@ tr.selected td{background:#fff7ed}
       <div class="kpi"><div class="label">记录数</div><div class="value" id="kpiRecords">-</div><div class="foot" id="kpiRecordsFoot">-</div></div>
       <div class="kpi"><div class="label">检出框</div><div class="value" id="kpiBoxes">-</div><div class="foot">累计检测框</div></div>
       <div class="kpi"><div class="label">模型状态</div><div class="value" id="kpiModel" style="font-size:16px">-</div><div class="foot" id="kpiDevice">-</div></div>
-      <div class="kpi"><div class="label">类别 Top</div><div class="value" id="kpiSource" style="font-size:13px;line-height:1.35">-</div><div class="foot">by label / source</div></div>
+      <div class="kpi"><div class="label">类别分布</div><div class="value" id="kpiSource" style="font-size:13px;line-height:1.35">-</div><div class="foot">按检出类别计数 · Top 4</div></div>
     </div>
 
     <div id="pageDetect" class="grid">
@@ -289,8 +290,6 @@ tr.selected td{background:#fff7ed}
           <span id="histCount" style="font-size:12px;color:var(--muted)"></span>
           <button type="button" class="btn btn-secondary btn-xs hidden" id="btnLoadMore">加载更多</button>
         </div>
-        <div id="detailBox" class="hidden"></div>
-        <button type="button" class="btn btn-danger btn-xs hidden" id="btnDeleteOne">删除这条</button>
       </section>
     </div>
 
@@ -343,6 +342,6 @@ tr.selected td{background:#fff7ed}
 </div>
 
 <div class="toast" id="toast"></div>
-<script src="/static/app.js?v=016"></script>
+<script src="/static/app.js?v=017"></script>
 </body>
 </html>
