@@ -7,7 +7,7 @@
 > V2 已切换自训缺陷模型 `models/def_best.pt`（NEU-DET 6 类，mAP50=0.817），并新增 `rag_agent/` 处置模块：检测出缺陷 → RAG 查维修 SOP → Agent 给多步处置方案 → 高危动作人工确认（HITL）。
 
 > **合作说明**：本仓库为合作项目 [lenhui731/ShopInspect](https://github.com/lenhui731/ShopInspect) 的 fork。
-> 周靖负责检测工程闭环（FastAPI + SQLite + 看板 + 摄像头，V1.3）；何承恩（本 fork）新增 **缺陷模型训练 + rag_agent（RAG 缺陷处置 + Agent + HITL）**。详见 `INTEGRATION_PLAN.md`。
+> 周靖负责检测工程闭环（FastAPI + SQLite + 看板 + 摄像头，V1.3）；何承恩（本 fork）新增 **缺陷模型训练 + rag_agent（RAG 缺陷处置 + Agent + HITL）**。
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688)](https://fastapi.tiangolo.com/)
@@ -190,8 +190,6 @@ ShopInspect/
   config.yaml
   requirements.txt
   CURRENT_PROGRESS.md  # 跨会话续作进度
-  INTEGRATION_PLAN.md  # 融合方案（分工/架构/阶段）
-  HANDOFF_PROMPT.md    # 交接提示词
 ```
 
 ---
