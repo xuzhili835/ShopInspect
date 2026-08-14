@@ -28,7 +28,7 @@ ShopInspect 把检测能力收敛成一条产线可用链路：
 4. **看板**：KPI、历史筛选、详情大图、CSV 导出
 5. **处置**（V2 新增）：检出缺陷 → RAG 查维修 SOP → Agent 多步方案 → 高危人工确认
 
-适合简历展示的能力点：
+本项目体现的工程能力点：
 
 - 视觉模型工程化接入（Ultralytics YOLO）
 - 后端服务与数据追溯（FastAPI + SQLite）
@@ -205,7 +205,7 @@ ShopInspect/
 
 ---
 
-## 设计取舍（面试可讲）
+## 设计取舍
 
 1. **先通路、后专用模型**  
    V1 用通用 YOLO 验证「采图 → 推理 → 落库 → 看板」全链路；V2 用 NEU-DET 自训 `def_best.pt` 切换真缺陷告警，避免一上来卡在标注。
@@ -224,17 +224,6 @@ ShopInspect/
 
 6. **AI 能力走 API、工程自己写**  
    嵌入（bge-m3）和对话（Qwen3）走 SiliconFlow API，SOP 语料若涉密可换本地嵌入、上层不动；检索阈值、拒答、业务编排、HITL 规则都是自己写的业务逻辑。
-
----
-
-## 简历一句话
-
-**合作版（分工口径）**：ShopInspect 是和同学合作的工业质检项目——周靖做检测工程闭环（FastAPI / SQLite / 看板 / 摄像头），我负责**缺陷模型训练（NEU-DET 6 类，mAP50=0.817）+ 缺陷处置 RAG + Agent（LangChain + LangGraph）**：检测出缺陷 → RAG 查维修 SOP（bge-m3 + Chroma，带来源引用与拒答）→ Agent 多步处置方案（查 SOP + 查历史）→ 高危动作 HITL 人工确认；单进程单端口接入，同进程读检测记录。
-
-**检测闭环版（周靖）**：车间质检台 **ShopInspect**：YOLO 检测 + FastAPI 服务 + SQLite 追溯 + Web 看板，支持工单/批次筛选与 CSV 导出，打通产线视觉质检应用闭环。
-
-- 原版（检测闭环）：https://github.com/lenhui731/ShopInspect
-- 本 fork（+ 缺陷模型 + rag_agent）：https://github.com/xuzhili835/ShopInspect
 
 ---
 
