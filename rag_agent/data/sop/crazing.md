@@ -22,6 +22,6 @@
 成批出现优先反馈:炼钢连铸(结晶器铜板状态与镀层、二冷制度、保护浇铸)与加热炉(各段温度、在炉时间、炉内气氛);按炉号关联浇次记录溯源,整改后连续跟踪。
 
 ## 参考文献
-1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. [标准详情 · 全国标准信息公共服务平台](https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A)
-2. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. [DOI: 10.1016/j.apsusc.2013.09.002](https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 龟裂类样本定义)
-3. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). [期刊官网](http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102)(加热制度影响参考)
+1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
+2. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002: https://doi.org/10.1016/j.apsusc.2013.09.002(NEU-DET 龟裂类样本定义)
+3. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). 期刊官网: http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102(加热制度影响参考)
