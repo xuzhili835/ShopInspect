@@ -22,7 +22,7 @@
 反馈加热炉(出炉温度、在炉时间——控制初生皮厚度)与除鳞箱(高压水压力、喷嘴点检周期、角度校准);压入呈带状时排查喷嘴遮挡;结合氧化铁皮机理研究优化除鳞制度。
 
 ## 参考文献
-1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S].
-2. 热轧薄板表面氧化铁皮类缺陷的形成机理与控制[R]. 首钢迁钢 2160mm 产线研究.(核心机理依据)
-3. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013.
-4. 热轧酸洗钢卷生产流程工艺资料.(酸洗处置依据)
+1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. [标准详情 · 全国标准信息公共服务平台](https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A)
+2. 热轧钢板典型压入式氧化铁皮的分类及其形成机理[J]. 东北大学学报(自然科学版). [学报官网全文](https://xuebao.neu.edu.cn/natural/CN/article/downloadArticleFile.do?attachType=PDF&id=1469)(浅层压入式/嵌入式两类机理——分级处置依据)
+3. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). [期刊官网](http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102)(成因分类与控制措施)
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. [DOI: 10.1016/j.apsusc.2013.09.002](https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 氧化铁皮压入类样本定义)

@@ -21,6 +21,6 @@
 反馈加热炉(各段温度均匀性、在炉时间)与轧制温度制度;斑块呈规律性分布时排查水冷边遮挡与除鳞局部盲区;定期做炉温均匀性测试(黑匣子测试)。
 
 ## 参考文献
-1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S].
-2. 热轧薄板表面氧化铁皮类缺陷的形成机理与控制[R]. 首钢迁钢 2160mm 产线研究.(温度制度与氧化关联)
-3. 热轧酸洗钢卷生产流程工艺资料.(酸洗去除表层氧化处理依据)
+1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. [标准详情 · 全国标准信息公共服务平台](https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A)
+2. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). [期刊官网](http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102)(温度制度与局部氧化关联)
+3. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. [DOI: 10.1016/j.apsusc.2013.09.002](https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 斑块类样本定义)

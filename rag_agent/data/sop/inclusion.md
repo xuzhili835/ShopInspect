@@ -22,6 +22,6 @@
 反馈炼钢工序:脱氧制度、中包/结晶器耐材寿命管理、保护浇铸氩封状态;区分耐材类与脱氧类夹杂对症整改;建立炉号-浇次-缺陷对应台账。
 
 ## 参考文献
-1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S].
-2. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013.(异物来源五分类)
-3. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013.
+1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. [标准详情 · 全国标准信息公共服务平台](https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A)
+2. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013. [期刊官网全文](https://metalworld.ustb.edu.cn/cn/article/pdf/preview/10.3969/j.issn.1000-6826.2021.01.0013.pdf)(异物来源分类,宝钢 1580mm 产线)
+3. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. [DOI: 10.1016/j.apsusc.2013.09.002](https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 夹杂类样本定义)
