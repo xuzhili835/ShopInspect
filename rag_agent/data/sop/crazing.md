@@ -25,5 +25,6 @@
 
 ## 参考文献
 1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
-2. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002: https://doi.org/10.1016/j.apsusc.2013.09.002(NEU-DET 龟裂类样本定义)
-3. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). 期刊官网: http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102(加热制度影响参考)
+2. 连铸坯表面网状裂纹[J]. 工程科学学报(北京科技大学). DOI: 10.13374/j.issn1001-053x.2005.04.013 (https://cje.ustb.edu.cn/article/doi/10.13374/j.issn1001-053x.2005.04.013)(核心结论:结晶器铜板磨损后液态铜沿奥氏体晶界渗透致晶界脆化——本篇成因机理的直接依据)
+3. 钢板表面星形裂纹的形成原因[J]. 理化检验(物理分册). DOI: 10.11973/lhjy-wl202208010 (https://qikan.cmes.org/lhjywlfc/CN/PDF/10.11973/lhjy-wl202208010)
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002 (https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 龟裂类样本定义)

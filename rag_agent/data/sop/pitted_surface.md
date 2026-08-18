@@ -25,5 +25,6 @@
 
 ## 参考文献
 1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
-2. 热轧钢板典型压入式氧化铁皮的分类及其形成机理[J]. 东北大学学报(自然科学版). 学报官网全文: https://xuebao.neu.edu.cn/natural/CN/article/downloadArticleFile.do?attachType=PDF&id=1469(氧化铁皮压入-脱落成坑机理)
-3. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013. 期刊官网全文: https://metalworld.ustb.edu.cn/cn/article/pdf/preview/10.3969/j.issn.1000-6826.2021.01.0013.pdf(辊面/异物伤源来源)
+2. 热轧带钢表面凹坑缺陷成因分析与预防[J]. 机械研究与应用(氧化铁皮微粒与水汽烟尘附着、轧机振动锈蚀物掉落压入——坑类成因直接依据). 期刊官网: https://html.rhhz.net/JXYJ/html/b06a7587-990e-40e2-9cf4-1e08614af7d5.htm
+3. 热轧钢板典型压入式氧化铁皮的分类及其形成机理[J]. 东北大学学报(自然科学版). 学报官网全文: https://xuebao.neu.edu.cn/natural/CN/article/downloadArticleFile.do?attachType=PDF&id=1469(压入-脱落成坑机理)
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002 (https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 麻点类样本定义)

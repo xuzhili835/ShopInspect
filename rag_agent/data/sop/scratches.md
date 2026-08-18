@@ -25,5 +25,6 @@
 
 ## 参考文献
 1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
-2. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013. 期刊官网全文: https://metalworld.ustb.edu.cn/cn/article/pdf/preview/10.3969/j.issn.1000-6826.2021.01.0013.pdf
-3. 热轧钢板典型压入式氧化铁皮的分类及其形成机理[J]. 东北大学学报(自然科学版). 学报官网全文: https://xuebao.neu.edu.cn/natural/CN/article/downloadArticleFile.do?attachType=PDF&id=1469(辊面/异物伤源判别参考)
+2. 热轧带钢表面马蹄状起皮缺陷分析[J]. 汉斯出版社(综述热轧带钢常见表面缺陷类型——含划伤/辊印/氧化铁皮压入/夹杂线——及成因). 全文: https://pdf.hanspub.org/meng20220300000_11178231.pdf
+3. 冷轧带钢表面热划伤缺陷分析及控制[J]. 2024. 条目: https://www.qikanchina.com/thesis/detail/2562880
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002 (https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 划痕类样本定义)

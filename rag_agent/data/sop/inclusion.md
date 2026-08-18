@@ -25,5 +25,6 @@
 
 ## 参考文献
 1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
-2. 热轧带钢异物压入缺陷分析及改进措施[J]. 金属世界, 2021(1). DOI: 10.3969/j.issn.1000-6826.2021.01.0013. 期刊官网全文: https://metalworld.ustb.edu.cn/cn/article/pdf/preview/10.3969/j.issn.1000-6826.2021.01.0013.pdf(异物来源分类,宝钢 1580mm 产线)
-3. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002: https://doi.org/10.1016/j.apsusc.2013.09.002(NEU-DET 夹杂类样本定义)
+2. 热轧卷板表面夹渣缺陷来源分析及控制现状[J]. 钢铁, 2022(1). 条目: https://www.cnki.com.cn/Article/CJFDTotal-GANT202201002.htm(系统论述钢包精炼渣/中间包覆盖剂/结晶器保护渣/耐材来源——本篇成因机理的直接依据)
+3. 冷轧板表面夹杂缺陷成因及控制[J]. 中国冶金(首钢京唐案例:保护渣卷渣与Al2O3夹杂). 期刊官网: https://www.chinamet.cn/gyby/zgyj/CN/10.13228/j.boyuan.issn1006-9356.20140416
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002 (https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 夹杂类样本定义)

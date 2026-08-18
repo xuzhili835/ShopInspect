@@ -24,5 +24,6 @@
 
 ## 参考文献
 1. GB/T 14977-2008 热轧钢板表面质量的一般要求[S]. 标准详情 · 全国标准信息公共服务平台: https://std.samr.gov.cn/gb/search/gbDetailed?id=71F772D78682D3A7E05397BE0A0AB82A
-2. 热轧板带氧化铁皮产生的原因和控制措施[J]. 轧钢(首钢京唐). 期刊官网: http://www.chinarolling.com/gyby/zg/CN/10.13228/j.boyuan.issn1003-9996.20170102(温度制度与局部氧化关联)
-3. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002: https://doi.org/10.1016/j.apsusc.2013.09.002(NEU-DET 斑块类样本定义)
+2. 热轧低碳DC04钢表面色差产生机理及控制[J]. 湖南大学学报(色差主因=带钢中部与边部氧化铁皮厚度及结构差异——本篇成因机理的直接依据). 全文: http://hdxbzkb.ijournals.cn/hndxzr/article/html/20181209
+3. 热轧工艺对钛析出强化钢表面色差的影响[J]. 钢铁. DOI: 10.13228/j.boyuan.issn0449-749x.20170321 (https://www.chinamet.cn/gyby/gt/CN/10.13228/j.boyuan.issn0449-749x.20170321)
+4. Song K, Yan Y. A noise robust method based on completed local binary patterns for hot-rolled steel strip surface defects[J]. Applied Surface Science, 2013, 285(B): 858-864. DOI: 10.1016/j.apsusc.2013.09.002 (https://doi.org/10.1016/j.apsusc.2013.09.002)(NEU-DET 斑块类样本定义)
